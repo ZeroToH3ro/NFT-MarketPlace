@@ -14,7 +14,7 @@ import { Button, Error } from "../componentsindex";
 import images from "../../img";
 
 //IMPORT FROM SMART CONTRACT
-import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
+// import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const NavBar = () => {
     //----USESTATE COMPONNTS
@@ -77,9 +77,9 @@ const NavBar = () => {
     };
 
     //SMART CONTRACT SECTION
-    const { currentAccount, connectWallet, openError } = useContext(
-        NFTMarketplaceContext
-    );
+    // const { currentAccount, connectWallet, openError } = useContext(
+    //     NFTMarketplaceContext
+    // );
 
     return (
         <div className={Style.navbar}>
@@ -127,16 +127,16 @@ const NavBar = () => {
                     </div>
 
                     {/* CREATE BUTTON SECTION */}
-                    <div className={Style.navbar_container_right_button}>
-                        {currentAccount == "" ? (
-                            <Button btnName="Connect Wallet" handleClick={() => connectWallet()} />
-                        ) : (
-                            <Button
-                                btnName="Create"
-                                handleClick={() => router.push("/uploadNFT")}
-                            />
-                        )}
-                    </div>
+                    {/*<div className={Style.navbar_container_right_button}>*/}
+                    {/*    {currentAccount == "" ? (*/}
+                    {/*        <Button btnName="Connect Wallet" handleClick={() => connectWallet()} />*/}
+                    {/*    ) : (*/}
+                    {/*        <Button*/}
+                    {/*            btnName="Create"*/}
+                    {/*            handleClick={() => router.push("/uploadNFT")}*/}
+                    {/*        />*/}
+                    {/*    )}*/}
+                    {/*</div>*/}
 
                     {/* USER PROFILE */}
 
@@ -151,7 +151,7 @@ const NavBar = () => {
                                 className={Style.navbar_container_right_profile}
                             />
 
-                            {profile && <Profile currentAccount={currentAccount} />}
+                            {/*{profile && <Profile currentAccount={currentAccount} />}*/}
                         </div>
                     </div>
 
@@ -166,7 +166,7 @@ const NavBar = () => {
                 </div>
             </div>
 
-            {/* SIDBAR CPMPONE/NT */}
+            {/* SIDE BAR COMPONENT */}
             {openSideMenu && (
                 <div className={Style.sideBar}>
                     <SideBar
@@ -177,7 +177,7 @@ const NavBar = () => {
                 </div>
             )}
 
-            {openError && <Error />}
+            {/*{openError && <Error />}*/}
         </div>
     );
 };
