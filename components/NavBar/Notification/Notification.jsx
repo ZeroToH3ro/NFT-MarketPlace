@@ -21,7 +21,7 @@ const Notification = () => {
                 </div>
                 <div className={Style.notification_box_info}>
                     <p>7 minutes ago</p>
-                    <small>Chibuike Asogwa</small>
+                    <small>Zero Dev</small>
                 </div>
                 <span className={Style.notification_box_new}></span>
             </div>

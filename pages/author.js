@@ -13,7 +13,7 @@ import {
 } from "../authorPage/componentIndex";
 
 //IMPORT SMART CONTRACT DATA
-// import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
+import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
 
 const author = () => {
     const followerArray = [
@@ -56,27 +56,27 @@ const author = () => {
     const [following, setFollowing] = useState(false);
 
     //IMPORT SMART CONTRACT DATA
-    // const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(
-    //     NFTMarketplaceContext
-    // );
+    const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(
+        NFTMarketplaceContext
+    );
 
     const [nfts, setNfts] = useState([]);
     const [myNFTs, setMyNFTs] = useState([]);
 
-    // useEffect(() => {
-    //     fetchMyNFTsOrListedNFTs("fetchItemsListed").then((items) => {
-    //         setNfts(items);
-    //
-    //         console.log(nfts);
-    //     });
-    // }, []);
-    //
-    // useEffect(() => {
-    //     fetchMyNFTsOrListedNFTs("fetchMyNFTs").then((items) => {
-    //         setMyNFTs(items);
-    //         console.log(myNFTs);
-    //     });
-    // }, []);
+    useEffect(() => {
+        fetchMyNFTsOrListedNFTs("fetchItemsListed").then((items) => {
+            setNfts(items);
+
+            console.log(nfts);
+        });
+    }, []);
+
+    useEffect(() => {
+        fetchMyNFTsOrListedNFTs("fetchMyNFTs").then((items) => {
+            setMyNFTs(items);
+            console.log(myNFTs);
+        });
+    }, []);
 
     return (
         <div className={Style.author}>

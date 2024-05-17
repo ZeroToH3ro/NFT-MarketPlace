@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { BsImages } from "react-icons/bs";
-import images from "../../img";
 import Image from "next/image";
 import Link from "next/link";
 
 //INTERNAL IMPORT
 import Style from "./NFTCard.module.css";
+import images from "../../img";
 
-const NFTCard = () => {
-
+const NFTCard = ({ NFTData }) => {
     const [like, setLike] = useState(true);
 
     const likeNft = () => {
@@ -20,8 +19,7 @@ const NFTCard = () => {
         }
     };
 
-    const NFTData = [1,2,3,4,5,6,7,8,9];
-
+    // console.log(NFTData);
     return (
         <div className={Style.NFTCard}>
             {NFTData.map((el, i) => (
@@ -29,7 +27,7 @@ const NFTCard = () => {
                     <div className={Style.NFTCard_box} key={i + 1}>
                         <div className={Style.NFTCard_box_img}>
                             <Image
-                                src={images.nft_image_1}
+                                src={el.image}
                                 alt="NFT images"
                                 width={600}
                                 height={600}
@@ -76,7 +74,7 @@ const NFTCard = () => {
                                             className={Style.NFTCard_box_update_details_price_box_bid}
                                         >
                                             <small>Current Bid</small>
-                                            <p>1.000ETH</p>
+                                            <p>{el.price}ETH</p>
                                         </div>
                                         <div
                                             className={

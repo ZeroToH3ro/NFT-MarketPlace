@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
+
+//INTERNAL IMPORT
+import Style from "../styles/index.module.css";
 import {
     HeroSection,
     Service,
@@ -9,17 +12,45 @@ import {
     Filter,
     NFTCard,
     Collection,
-    FollowerTab,
     AudioLive,
+    FollowerTab,
     Slider,
+    Brand,
+    Video,
     Loader,
-    Brand, Video
-} from "../components/componentsindex"
+    Error
+} from "../components/componentsindex";
 import { getTopCreators } from "../TopCreators/TopCreators";
-import Style from "../styles/index.module.css";
 
-const index = () => {
-    const nfts = [];
+//IMPORTING CONTRCT DATA
+import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
+
+const Home = () => {
+    const { checkIfWalletConnected, currentAccount } = useContext(
+        NFTMarketplaceContext
+    );
+    useEffect(() => {
+        checkIfWalletConnected();
+    }, []);
+
+    const { fetchNFTs } = useContext(NFTMarketplaceContext);
+    const [nfts, setNfts] = useState([]);
+    const [nftsCopy, setNftsCopy] = useState([]);
+
+    // useEffect(() => {
+    //     // if (currentAccount) {
+    //     fetchNFTs().then((items) => {
+    //         console.log(nfts);
+    //         setNfts(items.reverse());
+    //         setNftsCopy(items);
+    //     });
+    //     // }
+    // }, []);
+
+    //CREATOR LIST
+
+    const creators = getTopCreators(nfts);
+    // console.log(creators);
 
     return (
         <div className={Style.homePage}>
@@ -31,11 +62,11 @@ const index = () => {
                 paragraph="Discover the most outstanding NFTs in all topics of life."
             />
             <AudioLive />
-            {/*{creators.length == 0 ? (*/}
-            {/*    <Loader />*/}
-            {/*) : (*/}
-            {/*    <FollowerTab TopCreator={creators} />*/}
-            {/*)}*/}
+            {creators.length === 0 ? (
+                <Loader />
+            ) : (
+                <FollowerTab TopCreator={creators} />
+            )}
 
             <Slider />
             <Collection />
@@ -44,7 +75,7 @@ const index = () => {
                 paragraph="Discover the most outstanding NFTs in all topics of life."
             />
             <Filter />
-            {/*{nfts.length == 0 ? <Loader /> : <NFTCard />}*/}
+            {nfts.length === 0 ? <Loader /> : <NFTCard NFTData={nfts} />}
 
             <Title
                 heading="Browse by category"
@@ -54,8 +85,9 @@ const index = () => {
             <Subscribe />
             <Brand />
             <Video />
+            {/*<Error/>*/}
         </div>
-    )
+    );
 };
 
-export default index;
+export default Home;

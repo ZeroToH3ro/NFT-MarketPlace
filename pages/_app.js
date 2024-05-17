@@ -4,16 +4,15 @@ import React from 'react';
 
 //INTRNAL IMPORT
 import { NavBar, Footer } from "../components/componentsindex";
-// import { NFTMarketplaceProvider } from "../Context/NFTMarketplaceContext";
+import { NFTMarketplaceProvider } from "../Context/NFTMarketplaceContext";
 
 const MyApp = ({ Component, pageProps }) => (
-
     <div>
-        {/*<NFTMarketplaceProvider>*/}
+        <NFTMarketplaceProvider>
             <NavBar />
             <Component {...pageProps} />
             <Footer />
-        {/*</NFTMarketplaceProvider>*/}
+        </NFTMarketplaceProvider>
     </div>
 );
 

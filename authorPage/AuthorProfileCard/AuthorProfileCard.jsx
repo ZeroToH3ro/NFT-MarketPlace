@@ -84,16 +84,16 @@ const AuthorProfileCard = ({currentAccount}) => {
                     </p>
 
                     <div className={Style.AuthorProfileCard_box_info_social}>
-                        <a href="#">
+                        <a href="https://github.com/ZeroToH3ro/NFT-MarketPlace">
                             <TiSocialFacebook/>
                         </a>
-                        <a href="#">
+                        <a href="https://github.com/ZeroToH3ro/NFT-MarketPlace">
                             <TiSocialInstagram/>
                         </a>
-                        <a href="#">
+                        <a href="https://github.com/ZeroToH3ro/NFT-MarketPlace">
                             <TiSocialLinkedin/>
                         </a>
-                        <a href="#">
+                        <a href="https://github.com/ZeroToH3ro/NFT-MarketPlace">
                             <TiSocialYoutube/>
                         </a>
                     </div>
