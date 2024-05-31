@@ -7,7 +7,7 @@ import {
 
 //INTERNAL IMPORT
 import Style from "./Collection.module.css";
-import DaysComponent from "./DaysComponent/DaysComponent";
+import DaysComponent from "./DaysComponents/DaysComponents";
 import images from "../../img";
 
 const Collection = () => {
@@ -136,9 +136,19 @@ const Collection = () => {
     return (
         <div className={Style.collection}>
             <div className={Style.collection_title}>
-                <div>
-                    <h2>My Best NFT Creations</h2>
-                    <h3>Explore some of the most beautiful NFT creations </h3>
+                <h2>Top List Creators</h2>
+                <div className={Style.collection_collections}>
+                    <div className={Style.collection_collections_btn}>
+                        <button onClick={() => openPopular()}>
+                            <BsFillAlarmFill /> 24 hours
+                        </button>
+                        <button onClick={() => openFollower()}>
+                            <BsCalendar3 /> 7 days
+                        </button>
+                        <button onClick={() => openNews()}>
+                            <BsFillCalendarDateFill /> 30 days
+                        </button>
+                    </div>
                 </div>
             </div>
             {popular && (

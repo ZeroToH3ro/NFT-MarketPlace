@@ -1,28 +1,35 @@
-import React, {useEffect, useState} from "react";
+import React, { useState, useEffect } from "react";
 import Web3Modal from "web3modal";
-import {ethers} from "ethers";
-import {useRouter} from "next/router";
+import { ethers } from "ethers";
+import { useRouter } from "next/router";
 import axios from "axios";
-import {create} from "kubo-rpc-client";
-//INTERNAL  IMPORT
-import {NFTMarketplaceABI, NFTMarketplaceAddress,} from "./constants";
+import { create as ipfsHttpClient } from "ipfs-http-client";
+require("dotenv").config();
 
-// const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-// const projectSecretKey = process.env.NEXT_PUBLIC_SECRECT_KEY;
-// const auth = `Basic ${Buffer.from(`${projectId}:${projectSecretKey}`).toString(
-//     "base64"
-// )}`;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const projectSecretKey = process.env.NEXT_PUBLIC_SECRECT_KEY;
+const auth = `Basic ${Buffer.from(`${projectId}:${projectSecretKey}`).toString(
+    "base64"
+)}`;
 
 const subdomain = process.env.NEXT_PUBLIC_SUBDOMAIN;
 
-const client = create({
-    host: "localhost",
+const client = ipfsHttpClient({
+    host: "ipfs.infura.io",
     port: 5001,
-    protocol: "host",
-    // headers: {
-    //     authorization: auth,
-    // },
+    protocol: "https",
+    headers: {
+        authorization: auth,
+    },
 });
+
+//INTERNAL  IMPORT
+import {
+    NFTMarketplaceAddress,
+    NFTMarketplaceABI,
+    // transferFundsAddress,
+    // transferFundsABI,
+} from "./constants";
 
 //---FETCHING SMART CONTRACT
 const fetchContract = (signerOrProvider) =>
@@ -41,7 +48,8 @@ const connectingWithSmartContract = async () => {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        return fetchContract(signer);
+        const contract = fetchContract(signer);
+        return contract;
     } catch (error) {
         console.log("Something went wrong while connecting with contract", error);
     }
@@ -49,10 +57,10 @@ const connectingWithSmartContract = async () => {
 
 export const NFTMarketplaceContext = React.createContext();
 
-export const NFTMarketplaceProvider = ({children}) => {
+export const NFTMarketplaceProvider = ({ children }) => {
     const titleData = "Discover, collect, and sell NFTs";
 
-    //------USESTATE
+    //------USESTAT
     const [error, setError] = useState("");
     const [openError, setOpenError] = useState(false);
     const [currentAccount, setCurrentAccount] = useState("");
@@ -72,11 +80,11 @@ export const NFTMarketplaceProvider = ({children}) => {
 
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
-                console.log(accounts[0]);
+                // console.log(accounts[0]);
             } else {
                 // setError("No Account Found");
                 // setOpenError(true);
-                // console.log("No account");
+                console.log("No account");
             }
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -94,7 +102,7 @@ export const NFTMarketplaceProvider = ({children}) => {
         checkIfWalletConnected();
     }, []);
 
-    //---CONNECT WALLET FUNCTION
+    //---CONNET WALLET FUNCTION
     const connectWallet = async () => {
         try {
             if (!window.ethereum)
@@ -108,7 +116,7 @@ export const NFTMarketplaceProvider = ({children}) => {
             setCurrentAccount(accounts[0]);
 
             // window.location.reload();
-            await connectingWithSmartContract();
+            connectingWithSmartContract();
         } catch (error) {
             // setError("Error while connecting to wallet");
             // setOpenError(true);
@@ -118,9 +126,9 @@ export const NFTMarketplaceProvider = ({children}) => {
     //---UPLOAD TO IPFS FUNCTION
     const uploadToIPFS = async (file) => {
         try {
-            const added = await client.add({content: file});
-            // const url = `${subdomain}/ipfs/${added.path}`;
-            return 'http://localhost:5001/ipfs/' + added.path;
+            const added = await client.add({ content: file });
+            const url = `${subdomain}/ipfs/${added.path}`;
+            return url;
         } catch (error) {
             setError("Error Uploading to IPFS");
             setOpenError(true);
@@ -132,7 +140,7 @@ export const NFTMarketplaceProvider = ({children}) => {
         if (!name || !description || !price || !image)
             return setError("Data Is Missing"), setOpenError(true);
 
-        const data = JSON.stringify({name, description, image});
+        const data = JSON.stringify({ name, description, image });
 
         try {
             const added = await client.add(data);
@@ -177,18 +185,21 @@ export const NFTMarketplaceProvider = ({children}) => {
 
     const fetchNFTs = async () => {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
+            const provider = new ethers.providers.JsonRpcProvider(
+                process.env.NEXT_PUBLIC_POLYGON_AMOY_RPC
+            );
+
             const contract = fetchContract(provider);
 
             const data = await contract.fetchMarketItems();
 
             const items = await Promise.all(
                 data.map(
-                    async ({tokenId, seller, owner, price: unformattedPrice}) => {
+                    async ({ tokenId, seller, owner, price: unformattedPrice }) => {
                         const tokenURI = await contract.tokenURI(tokenId);
 
                         const {
-                            data: {image, name, description},
+                            data: { image, name, description },
                         } = await axios.get(tokenURI, {});
                         const price = ethers.utils.formatUnits(
                             unformattedPrice.toString(),
@@ -235,10 +246,10 @@ export const NFTMarketplaceProvider = ({children}) => {
 
                 const items = await Promise.all(
                     data.map(
-                        async ({tokenId, seller, owner, price: unformattedPrice}) => {
+                        async ({ tokenId, seller, owner, price: unformattedPrice }) => {
                             const tokenURI = await contract.tokenURI(tokenId);
                             const {
-                                data: {image, name, description},
+                                data: { image, name, description },
                             } = await axios.get(tokenURI);
                             const price = ethers.utils.formatUnits(
                                 unformattedPrice.toString(),

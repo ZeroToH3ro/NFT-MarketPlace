@@ -84,7 +84,7 @@ const Home = () => {
             <Category />
             <Subscribe />
             <Brand />
-            <Video />
+            {/* <Video /> */}
             {/*<Error/>*/}
         </div>
     );

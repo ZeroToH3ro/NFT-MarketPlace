@@ -13,7 +13,7 @@ import images from "../img";
 import { Button } from "../components/componentsindex.js";
 import { DropZone } from "../UploadNFT/uploadNFTIndex.js";
 
-const UloadNFT = ({ uploadToIPFS, createNFT }) => {
+const UploadNFT = ({ uploadToIPFS, createNFT }) => {
     const [price, setPrice] = useState("");
     const [active, setActive] = useState(0);
     const [name, setName] = useState("");
@@ -128,9 +128,8 @@ const UloadNFT = ({ uploadToIPFS, createNFT }) => {
                     <div className={Style.upload_box_slider_div}>
                         {categoryArry.map((el, i) => (
                             <div
-                                className={`${Style.upload_box_slider} ${
-                                    active == i + 1 ? Style.active : ""
-                                }`}
+                                className={`${Style.upload_box_slider} ${active == i + 1 ? Style.active : ""
+                                    }`}
                                 key={i + 1}
                                 onClick={() => (setActive(i + 1), setCategory(el.category))}
                             >
@@ -231,7 +230,7 @@ const UloadNFT = ({ uploadToIPFS, createNFT }) => {
                     />
                     <Button
                         btnName="Preview"
-                        handleClick={() => {}}
+                        handleClick={() => { }}
                         classStyle={Style.upload_box_btn_style}
                     />
                 </div>
@@ -240,4 +239,4 @@ const UloadNFT = ({ uploadToIPFS, createNFT }) => {
     );
 };
 
-export default UloadNFT;
+export default UploadNFT;

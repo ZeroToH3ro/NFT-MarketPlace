@@ -8,10 +8,10 @@ import { Button } from "../componentsindex";
 import images from "../../img";
 
 //SMART CONTRACT IMPORT
-// import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
+import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const HeroSection = () => {
-    // const { titleData } = useContext(NFTMarketplaceContext);
+    const { titleData } = useContext(NFTMarketplaceContext);
     const router = useRouter();
     return (
         <div className={Style.heroSection}>

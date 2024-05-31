@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
+import { DiJqueryLogo } from "react-icons/di";
 //----IMPORT ICON
 import { MdNotifications } from "react-icons/md";
 import { BsSearch } from "react-icons/bs";
@@ -14,7 +15,7 @@ import { Button, Error } from "../componentsindex";
 import images from "../../img";
 
 //IMPORT FROM SMART CONTRACT
-// import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
+import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const NavBar = () => {
     //----USESTATE COMPONNTS
@@ -28,12 +29,12 @@ const NavBar = () => {
 
     const openMenu = (e) => {
         const btnText = e.target.innerText;
-        if (btnText == "Explore") {
+        if (btnText == "Discover") {
             setDiscover(true);
             setHelp(false);
             setNotification(false);
             setProfile(false);
-        } else if (btnText == "Service Support") {
+        } else if (btnText == "Help Center") {
             setDiscover(false);
             setHelp(true);
             setNotification(false);
@@ -77,20 +78,21 @@ const NavBar = () => {
     };
 
     //SMART CONTRACT SECTION
-    // const { currentAccount, connectWallet, openError } = useContext(
-    //     NFTMarketplaceContext
-    // );
+    const { currentAccount, connectWallet, openError } = useContext(
+        NFTMarketplaceContext
+    );
 
     return (
         <div className={Style.navbar}>
             <div className={Style.navbar_container}>
                 <div className={Style.navbar_container_left}>
-                    <Image src={images.logo} alt="Navbar logo" height={100} width={100} />
-
+                    <div className={Style.logo}>
+                        <DiJqueryLogo onClick={() => router.push("/")} />
+                    </div>
                     <div className={Style.navbar_container_left_box_input}>
                         <div className={Style.navbar_container_left_box_input_box}>
-                            <input type="text" placeholder="Search choice NFTs" />
-                            <BsSearch onClick={() => {}} className={Style.search_icon} />
+                            <input type="text" placeholder="Search NFT" />
+                            <BsSearch onClick={() => { }} className={Style.search_icon} />
                         </div>
                     </div>
                 </div>
@@ -98,8 +100,8 @@ const NavBar = () => {
                 {/* //END OF LEFT SECTION */}
                 <div className={Style.navbar_container_right}>
                     <div className={Style.navbar_container_right_discover}>
-                        {/* for Explore menu  */}
-                        <p onClick={(e) => openMenu(e)}>Explore</p>
+                        {/* DISCOVER MENU */}
+                        <p onClick={(e) => openMenu(e)}>Discover</p>
                         {discover && (
                             <div className={Style.navbar_container_right_discover_box}>
                                 <Discover />
@@ -109,7 +111,7 @@ const NavBar = () => {
 
                     {/* HELP CENTER MENU */}
                     <div className={Style.navbar_container_right_help}>
-                        <p onClick={(e) => openMenu(e)}>Service Support </p>
+                        <p onClick={(e) => openMenu(e)}>Help Center</p>
                         {help && (
                             <div className={Style.navbar_container_right_help_box}>
                                 <HelpCenter />
@@ -127,16 +129,16 @@ const NavBar = () => {
                     </div>
 
                     {/* CREATE BUTTON SECTION */}
-                    {/*<div className={Style.navbar_container_right_button}>*/}
-                    {/*    {currentAccount == "" ? (*/}
-                    {/*        <Button btnName="Connect Wallet" handleClick={() => connectWallet()} />*/}
-                    {/*    ) : (*/}
-                    {/*        <Button*/}
-                    {/*            btnName="Create"*/}
-                    {/*            handleClick={() => router.push("/uploadNFT")}*/}
-                    {/*        />*/}
-                    {/*    )}*/}
-                    {/*</div>*/}
+                    <div className={Style.navbar_container_right_button}>
+                        {currentAccount == "" ? (
+                            <Button btnName="Connect" handleClick={() => connectWallet()} />
+                        ) : (
+                            <Button
+                                btnName="Create"
+                                handleClick={() => router.push("/uploadNFT")}
+                            />
+                        )}
+                    </div>
 
                     {/* USER PROFILE */}
 
@@ -151,7 +153,7 @@ const NavBar = () => {
                                 className={Style.navbar_container_right_profile}
                             />
 
-                            {/*{profile && <Profile currentAccount={currentAccount} />}*/}
+                            {profile && <Profile currentAccount={currentAccount} />}
                         </div>
                     </div>
 
@@ -166,7 +168,7 @@ const NavBar = () => {
                 </div>
             </div>
 
-            {/* SIDE BAR COMPONENT */}
+            {/* SIDBAR CPMPONE/NT */}
             {openSideMenu && (
                 <div className={Style.sideBar}>
                     <SideBar
@@ -177,7 +179,7 @@ const NavBar = () => {
                 </div>
             )}
 
-            {/*{openError && <Error />}*/}
+            {openError && <Error />}
         </div>
     );
 };
