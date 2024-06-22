@@ -37,7 +37,7 @@ const NFTDescription = ({ nft }) => {
     const [owner, setOwner] = useState(false);
 
     const router = useRouter();
-
+    console.log(nft);
     const historyArray = [
         images.user1,
         images.user2,
@@ -92,7 +92,7 @@ const NFTDescription = ({ nft }) => {
         }
     };
 
-    const openOwner = () => {
+    const openOwmer = () => {
         if (!owner) {
             setOwner(true);
             setHistory(false);
@@ -293,7 +293,7 @@ const NFTDescription = ({ nft }) => {
                         <div className={Style.NFTDescription_box_profile_biding_box_tabs}>
                             <button onClick={(e) => openTabs(e)}>Bid History</button>
                             <button onClick={(e) => openTabs(e)}>Provanance</button>
-                            <button onClick={() => openOwner()}>Owner</button>
+                            <button onClick={() => openOwmer()}>Owner</button>
                         </div>
 
                         {history && (

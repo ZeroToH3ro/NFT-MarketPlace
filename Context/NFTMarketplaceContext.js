@@ -1,35 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import Web3Modal from "web3modal";
-import { ethers } from "ethers";
-import { useRouter } from "next/router";
+import {ethers} from "ethers";
+import {useRouter} from "next/router";
 import axios from "axios";
-import { create as ipfsHttpClient } from "ipfs-http-client";
-require("dotenv").config();
-
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-const projectSecretKey = process.env.NEXT_PUBLIC_SECRECT_KEY;
-const auth = `Basic ${Buffer.from(`${projectId}:${projectSecretKey}`).toString(
-    "base64"
-)}`;
-
-const subdomain = process.env.NEXT_PUBLIC_SUBDOMAIN;
-
-const client = ipfsHttpClient({
-    host: "ipfs.infura.io",
-    port: 5001,
-    protocol: "https",
-    headers: {
-        authorization: auth,
-    },
-});
-
+import {create} from '@web3-storage/w3up-client';
 //INTERNAL  IMPORT
 import {
-    NFTMarketplaceAddress,
-    NFTMarketplaceABI,
-    // transferFundsAddress,
-    // transferFundsABI,
-} from "./constants";
+    NFTMarketplaceABI, NFTMarketplaceAddress,
+    TransferFundsABI, TransferFundsAddress
+    } from "./constants";
+
+
+require("dotenv").config();
+const fs = require('fs').promises;
+
+// const subdomain = process.env.NEXT_PUBLIC_SUBDOMAIN;
 
 //---FETCHING SMART CONTRACT
 const fetchContract = (signerOrProvider) =>
@@ -57,7 +42,7 @@ const connectingWithSmartContract = async () => {
 
 export const NFTMarketplaceContext = React.createContext();
 
-export const NFTMarketplaceProvider = ({ children }) => {
+export const NFTMarketplaceProvider = ({children}) => {
     const titleData = "Discover, collect, and sell NFTs";
 
     //------USESTAT
@@ -115,49 +100,64 @@ export const NFTMarketplaceProvider = ({ children }) => {
             console.log(accounts);
             setCurrentAccount(accounts[0]);
 
-            // window.location.reload();
+            window.location.reload();
             connectingWithSmartContract();
         } catch (error) {
-            // setError("Error while connecting to wallet");
-            // setOpenError(true);
-        }
-    };
-
-    //---UPLOAD TO IPFS FUNCTION
-    const uploadToIPFS = async (file) => {
-        try {
-            const added = await client.add({ content: file });
-            const url = `${subdomain}/ipfs/${added.path}`;
-            return url;
-        } catch (error) {
-            setError("Error Uploading to IPFS");
+            setError("Error while connecting to wallet");
             setOpenError(true);
         }
     };
 
-    //---CREATENFT FUNCTION
-    const createNFT = async (name, price, image, description, router) => {
-        if (!name || !description || !price || !image)
-            return setError("Data Is Missing"), setOpenError(true);
-
-        const data = JSON.stringify({ name, description, image });
+    const uploadToIPFS = async (file) => {
+        const client = await create();
+        await client.login('mtblaser2002@gmail.com');
+        await client.setCurrentSpace('did:key:z6MkjFtvzqoxrfjGVMBTZmuv6ZM7tpqX1Pvvf7qhcF1Tk39r');
 
         try {
-            const added = await client.add(data);
-            const url = `${subdomain}/ipfs/${added.path}`;
+            // Create a File object from the input file
+            const fileObj = new File([file], file.name);
+            console.log(fileObj);
+            // Upload the File object to Web3.Storage
+            const cid = await client.uploadDirectory([fileObj])
+            // Construct the IPFS URL
+            // https://bafybeianow3zuabxawkms2igj23svkkv3jpx2s3kibib3fzn2n2efi6soa.ipfs.w3s.link
+            console.log('passed uploadToIPFS')
+            return `https://w3s.link/ipfs/${cid}/${fileObj.name}`;
+        } catch (error) {
+            console.error("Error uploading to IPFS:", error); // Log the error for debugging
+            return null; // Indicate an error occurred
+        }
+    }
 
-            await createSale(url, price);
+    const createNFT = async (name, price, imagePath, description, router) => {
+        console.log(`name: ${name}, price: ${price}, image: ${imagePath}, description: ${description}, router: ${router}`);
+        try {
+            const client = await create();
+            await client.login('mtblaser2002@gmail.com');
+            await client.setCurrentSpace('did:key:z6MkjFtvzqoxrfjGVMBTZmuv6ZM7tpqX1Pvvf7qhcF1Tk39r');
+            const metadata = {
+                name,
+                description,
+                image: `${imagePath}`
+            };
+            const metadataFile = new File([JSON.stringify(metadata)], 'metadata.json', {type: 'application/json'});
+            const metadataCid = await client.uploadDirectory([metadataFile])
+            console.log(`meta: ${metadata} - metadataFile: ${metadataFile}`);
+            // Create Sale using metadataCid
+            await createSale(`https://w3s.link/ipfs/${metadataCid}/metadata.json`, price);
+
             router.push("/searchPage");
         } catch (error) {
+            console.log(error);
             setError("Error while creating NFT");
             setOpenError(true);
         }
-    };
+    }
 
     //--- createSale FUNCTION
     const createSale = async (url, formInputPrice, isReselling, id) => {
         try {
-            console.log(url, formInputPrice, isReselling, id);
+            console.log(`url: ${url}, formInputPrice: ${formInputPrice}, isReselling: ${isReselling}, id: ${id}`);
             const price = ethers.utils.parseUnits(formInputPrice, "ether");
 
             const contract = await connectingWithSmartContract();
@@ -172,12 +172,22 @@ export const NFTMarketplaceProvider = ({ children }) => {
                     value: listingPrice.toString(),
                 });
 
+
+
             await transaction.wait();
             console.log(transaction);
         } catch (error) {
             setError("error while creating sale");
             setOpenError(true);
-            console.log(error);
+            if (error.code === -32603 && error.message.includes('Internal JSON-RPC error.')) {
+                console.error("Internal JSON-RPC Error:", error);
+
+                if (error.data && error.data.message) {
+                    console.error("Detailed Message:", error.data.message);
+                } else {
+                    console.error("Stack Trace:", error.stack);
+                }
+            }
         }
     };
 
@@ -185,9 +195,12 @@ export const NFTMarketplaceProvider = ({ children }) => {
 
     const fetchNFTs = async () => {
         try {
-            const provider = new ethers.providers.JsonRpcProvider(
-                process.env.NEXT_PUBLIC_POLYGON_AMOY_RPC
-            );
+            // const provider = new ethers.providers.JsonRpcProvider(
+            //     process.env.NEXT_PUBLIC_POLYGON_AMOY_RPC
+            // );
+            const web3Modal = new Web3Modal();
+            const connection = await web3Modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
 
             const contract = fetchContract(provider);
 
@@ -195,11 +208,11 @@ export const NFTMarketplaceProvider = ({ children }) => {
 
             const items = await Promise.all(
                 data.map(
-                    async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+                    async ({tokenId, seller, owner, price: unformattedPrice}) => {
                         const tokenURI = await contract.tokenURI(tokenId);
 
                         const {
-                            data: { image, name, description },
+                            data: {image, name, description},
                         } = await axios.get(tokenURI, {});
                         const price = ethers.utils.formatUnits(
                             unformattedPrice.toString(),
@@ -219,12 +232,9 @@ export const NFTMarketplaceProvider = ({ children }) => {
                     }
                 )
             );
-            return items;
 
-            // }
+            return items;
         } catch (error) {
-            // setError("Error while fetching NFTS");
-            // setOpenError(true);
             console.log(error);
         }
     };
@@ -246,10 +256,10 @@ export const NFTMarketplaceProvider = ({ children }) => {
 
                 const items = await Promise.all(
                     data.map(
-                        async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+                        async ({tokenId, seller, owner, price: unformattedPrice}) => {
                             const tokenURI = await contract.tokenURI(tokenId);
                             const {
-                                data: { image, name, description },
+                                data: {image, name, description},
                             } = await axios.get(tokenURI);
                             const price = ethers.utils.formatUnits(
                                 unformattedPrice.toString(),
@@ -272,8 +282,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
                 return items;
             }
         } catch (error) {
-            // setError("Error while fetching listed NFTs");
-            // setOpenError(true);
+            console.log(error.message);
         }
     };
 
@@ -294,8 +303,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
             await transaction.wait();
             router.push("/author");
         } catch (error) {
-            setError("Error While buying NFT");
-            setOpenError(true);
+            console.log(error.message);
         }
     };
 
@@ -305,8 +313,8 @@ export const NFTMarketplaceProvider = ({ children }) => {
 
     const fetchTransferFundsContract = (signerOrProvider) =>
         new ethers.Contract(
-            transferFundsAddress,
-            transferFundsABI,
+            TransferFundsAddress,
+            TransferFundsABI,
             signerOrProvider
         );
 
@@ -319,7 +327,7 @@ export const NFTMarketplaceProvider = ({ children }) => {
             const contract = fetchTransferFundsContract(signer);
             return contract;
         } catch (error) {
-            console.log(error);
+            console.log(error.message);
         }
     };
     //---TRANSFER FUNDS
@@ -374,9 +382,9 @@ export const NFTMarketplaceProvider = ({ children }) => {
             if (ethereum) {
                 const contract = await connectToTransferFunds();
 
-                const avaliableTransaction = await contract.getAllTransactions();
+                const availableTransaction = await contract.getAllTransactions();
 
-                const readTransaction = avaliableTransaction.map((transaction) => ({
+                const readTransaction = availableTransaction.map((transaction) => ({
                     addressTo: transaction.receiver,
                     addressFrom: transaction.sender,
                     timestamp: new Date(

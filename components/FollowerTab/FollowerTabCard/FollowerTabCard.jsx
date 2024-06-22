@@ -17,6 +17,8 @@ const FollowerTabCard = ({i, el}) => {
             setFollowing(false);
         }
     };
+
+    console.log("Follow tab card:", el);
     return (
         <div className={Style.FollowerTabCard}>
             <div className={Style.FollowerTabCard_rank}>

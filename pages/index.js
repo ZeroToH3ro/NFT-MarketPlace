@@ -37,20 +37,18 @@ const Home = () => {
     const [nfts, setNfts] = useState([]);
     const [nftsCopy, setNftsCopy] = useState([]);
 
-    // useEffect(() => {
-    //     // if (currentAccount) {
-    //     fetchNFTs().then((items) => {
-    //         console.log(nfts);
-    //         setNfts(items.reverse());
-    //         setNftsCopy(items);
-    //     });
-    //     // }
-    // }, []);
+    useEffect(() => {
+        fetchNFTs().then((items) => {
+            console.log(nfts);
+            setNfts(items.reverse());
+            setNftsCopy(items);
+        });
+    }, []);
 
     //CREATOR LIST
 
     const creators = getTopCreators(nfts);
-    // console.log(creators);
+    console.log(creators);
 
     return (
         <div className={Style.homePage}>

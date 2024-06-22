@@ -12,6 +12,7 @@ import {
     TiArrowSortedDown,
     TiArrowSortedUp,
 } from "react-icons/ti";
+import { DiJqueryLogo } from "react-icons/di";
 
 //INTERNAL IMPORT
 import Style from "./SideBar.module.css";
@@ -40,10 +41,10 @@ const SideBar = ({ setOpenSideMenu, currentAccount, connectWallet }) => {
             name: "Author Profile",
             link: "author",
         },
-        {
-            name: "NFT Details",
-            link: "NFT-details",
-        },
+        // {
+        //     name: "NFT Details",
+        //     link: "NFT-details",
+        // },
         {
             name: "Account Setting",
             link: "account",
@@ -56,7 +57,10 @@ const SideBar = ({ setOpenSideMenu, currentAccount, connectWallet }) => {
             name: "Connect Wallet",
             link: "connectWallet",
         },
-
+        // {
+        //     name: "Blog",
+        //     link: "blog",
+        // },
     ];
     //------HELP CNTEER
     const helpCenter = [
@@ -68,14 +72,14 @@ const SideBar = ({ setOpenSideMenu, currentAccount, connectWallet }) => {
             name: "Contact Us",
             link: "contactus",
         },
-        {
-            name: "Sign Up",
-            link: "signUp",
-        },
-        {
-            name: "LogIn",
-            link: "login",
-        },
+        // {
+        //     name: "Sign Up",
+        //     link: "signUp",
+        // },
+        // {
+        //     name: "LogIn",
+        //     link: "login",
+        // },
         {
             name: "Subscription",
             link: "subscription",
@@ -110,7 +114,12 @@ const SideBar = ({ setOpenSideMenu, currentAccount, connectWallet }) => {
             />
 
             <div className={Style.sideBar_box}>
-                <Image src={images.logo} alt="logo" width={150} height={150} />
+                {/* <Image src={images.logo} alt="logo" width={150} height={150} /> */}
+                <p>
+                    <a href="/">
+                        <DiJqueryLogo className={Style.sideBar_box_logo} />
+                    </a>
+                </p>
                 <p>
                     Discover the most outstanding articles on all topices of NFT & write
                     your own stories and share them
@@ -186,7 +195,7 @@ const SideBar = ({ setOpenSideMenu, currentAccount, connectWallet }) => {
                     />
                 )}
 
-                <Button btnName="Connect Wallet" handleClick={() => { }} />
+                <Button btnName="Connect Wallet" handleClick={() => {}} />
             </div>
         </div>
     );
