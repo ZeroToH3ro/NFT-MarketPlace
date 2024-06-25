@@ -33,15 +33,15 @@ const aboutus = () => {
     const factsArray = [
         {
             title: "10 million",
-            info: "Articles have been public around the world (as of Sept. 30, 2021)",
+            info: "Articles have been public around the world (as of Sept. 30, 2024)",
         },
         {
             title: "100,000",
-            info: "Registered users account (as of Sept. 30, 2021)",
+            info: "Registered users account (as of Sept. 30, 2024)",
         },
         {
             title: "220+",
-            info: "Countries and regions have our presence (as of Sept. 30, 2021",
+            info: "Countries and regions have our presence (as of Sept. 30, 2024",
         },
     ];
     return (
